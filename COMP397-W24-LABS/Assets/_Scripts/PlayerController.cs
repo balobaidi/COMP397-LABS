@@ -29,6 +29,9 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] bool _isGrounded;
 
+    [Header("Respawn Transform")]
+    [SerializeField] Transform _respawn;
+
     public void Awake() {
         _controller = GetComponent<CharacterController>();
         _inputs = new PlayerControl();
@@ -69,5 +72,15 @@ public class PlayerController : MonoBehaviour
     public void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(_groundCheck.position, _groundRadius);
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        Debug.Log($"Colliding with {other.tag}");
+
+        if (other.CompareTag("deathZone")) {
+            _controller.enabled = false;
+            transform.position = _respawn.position;
+            _controller.enabled = true;
+        }
     }
 }
