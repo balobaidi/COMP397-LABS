@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : Subject
 {
     PlayerControl _inputs;
     Vector2 _move;
@@ -81,6 +81,7 @@ public class PlayerController : MonoBehaviour
             _controller.enabled = false;
             transform.position = _respawn.position;
             _controller.enabled = true;
+            NotifyObservers();
         }
     }
 }
