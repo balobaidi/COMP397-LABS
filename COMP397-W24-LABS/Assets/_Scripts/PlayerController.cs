@@ -7,9 +7,14 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : Subject
 {
+    #region fields
     PlayerControl _inputs;
     Vector2 _move;
+    Camera _camera;
+    Vector3 _camForward, _camRight;
+    #endregion
 
+    #region serialized fields
     [SerializeField] float _speed;
 
     [Header ("Character Controller")]
@@ -32,7 +37,10 @@ public class PlayerController : Subject
     [Header("Respawn Transform")]
     [SerializeField] Transform _respawn;
 
+    #endregion
+
     public void Awake() {
+        _camera = Camera.main;
         _controller = GetComponent<CharacterController>();
         _inputs = new PlayerControl();
         _inputs.Player.Move.performed += Move_performed;
@@ -63,7 +71,15 @@ public class PlayerController : Subject
         if( _isGrounded && _velocity.y < 0.0f) {
             _velocity.y = 2.0f;
         }
-        Vector3 movement = new Vector3(_move.x, 0.0f, _move.y) * _speed * Time.fixedDeltaTime;
+        _camForward = _camera.transform.forward;
+        _camRight = _camera.transform.right;
+        _camForward.y = 0.0f;
+        _camRight.y = 0.0f;
+
+        _camForward.Normalize();
+        _camRight.Normalize();
+
+        Vector3 movement = (_camRight * _move.x + _camForward * _move.y) * _speed * Time.fixedDeltaTime;
         _controller.Move(movement);
         _velocity.y += _gravity * Time.fixedDeltaTime;
         _controller.Move(_velocity * Time.fixedDeltaTime);
